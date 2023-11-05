@@ -11,13 +11,13 @@ function App() {
         if (!(event.code in prev)) {
           prev[event.code] = event.timeStamp;
         }
-        return {...prev}
+        return { ...prev }
       });
     });
     document.addEventListener('keyup', (event) => {
       setPressedKeys(prev => {
         delete prev[event.code];
-        return {...prev}
+        return { ...prev }
       });
     });
   }, []);
@@ -38,27 +38,39 @@ function App() {
     note -= Bb3 - G3;
   }
 
-  // harmonic series i.e. standing waves
-  let waveNumber = 1;
-  for (let i=2; i<=10; i++) {
-    if (`Digit${i%10}` in pressedKeys) {
+  // A1 = 55Hz
+  const frequencies = [55];
+  const multiplier = Math.pow(2, 1 / 12);
+  for (let i = 1; i <= 12; i++) {
+    frequencies.push(frequencies[frequencies.length - 1] * multiplier);
+  }
+
+  // harmonic series i.e. overtone standing waves
+  let waveNumber = null;
+  for (let i = 1; i <= 10; i++) {
+    if (`Digit${i % 10}` in pressedKeys) {
       waveNumber = i;
       break
     }
   }
-  note *= waveNumber;
 
-  // A1 = 55Hz
-  const frequencies = [55];
-  const multiplier = Math.pow(2, 1/12);
-  for (let i=1; i<=12; i++) {
-    frequencies.push(frequencies[frequencies.length-1] * multiplier);
-  }
-  // show an A to A scale that matches the note played
-  let startingA = 2;
-  while (note > frequencies[frequencies.length-1]) {
-    startingA += 1;
-    frequencies.forEach((_, i) => frequencies[i] *= 2);
+  let startingA = 1;
+  let closestIdx = null;
+  if (waveNumber !== null) {  // will be null if no note is played
+    note *= waveNumber;
+    // show an A to A scale that matches the note played
+    while (note > frequencies[frequencies.length - 1]) {
+      startingA += 1;
+      frequencies.forEach((_, i) => frequencies[i] *= 2);
+    }
+    let closestDiff = note * 2;
+    frequencies.forEach((f, i) => {
+      let diff = Math.abs(note - f);
+      if (diff < closestDiff) {
+        closestIdx = i;
+        closestDiff = diff;
+      }
+    })
   }
 
   return (
@@ -74,7 +86,9 @@ function App() {
       <div>
         {
           frequencies.map((frequency, i) => (
-            <div key={i}>{indexToNote(i, startingA)}: {Math.floor(frequency)}</div>
+            <div key={i} style={i === closestIdx ? { color: 'red' } : {}}>
+              {indexToNote(i, startingA)}: {Math.floor(frequency)}
+            </div>
           ))
         }
       </div>
@@ -84,7 +98,7 @@ function App() {
 
 function indexToNote(index, startingA) {
   // A = 0
-  const letterIndex = index % 12 ;
+  const letterIndex = index % 12;
   const letter = [
     'A', 'Bb', 'B', 'C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab'
   ][letterIndex];
