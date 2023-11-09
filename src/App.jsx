@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import './App.css'
+import String from './String'
 
 function App() {
   const [pressedKeys, setPressedKeys] = useState({});
@@ -81,6 +82,9 @@ function App() {
         <span> {('KeyK' in pressedKeys) ? 1 : 0}</span>
         <span> {('KeyL' in pressedKeys) ? 1 : 0}</span>
       </div>
+      <div>
+        <String width={200} height={50} />
+      </div>
       <div>{Math.floor(note)}</div>
       <div>notes</div>
       <div>
@@ -92,6 +96,15 @@ function App() {
           ))
         }
       </div>
+      <h3>but why can the trumpet not play the fundamental frequency? Two reasons:</h3>
+      <ol>
+        <li>because it is not just a string - since it is 'closed' at the mouth piece and so at that end, it is actually at the peak of the sin wave and even harmonics are absent giving harmonics of 1,3,5</li>
+        <li>the large bell and shape of the tube somehow shifts the harmonics to 4,6,8 which feels like 2,3,4 of a double length tube... wtf</li>
+      </ol>
+      <ul>
+        <li>https://physics.stackexchange.com/a/292724</li>
+        <li>https://physics.stackexchange.com/a/524845</li>
+      </ul>
     </>
   )
 }
